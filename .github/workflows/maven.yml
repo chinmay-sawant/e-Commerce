@@ -67,12 +67,14 @@ jobs:
     - name: Create ecom schema
       run: |
         # Use psql to connect to the database and create the schema if it doesn't exist
-        # The password is passed securely via the PGPASSWORD environment variable
-        PGPASSWORD=${{ services.postgres.env.POSTGRES_PASSWORD }} psql \
+        # The password is passed securely via the PGPASSWORD environment variable set in the step's env block
+        psql \
           -h localhost \
           -d ${{ services.postgres.env.POSTGRES_DB }} \
           -U ${{ services.postgres.env.POSTGRES_USER }} \
           -c "CREATE SCHEMA IF NOT EXISTS ecom;"
+      env: # Define environment variables for this specific step
+        PGPASSWORD: ${{ services.postgres.env.POSTGRES_PASSWORD }} # Access the password from the service env
 
     - name: Build with Maven
       # Updated command to specify the pom.xml location within the ecom folder
@@ -144,12 +146,14 @@ jobs:
     - name: Create ecom schema
       run: |
         # Use psql to connect to the database and create the schema if it doesn't exist
-        # The password is passed securely via the PGPASSWORD environment variable
-        PGPASSWORD=${{ services.postgres.env.POSTGRES_PASSWORD }} psql \
+        # The password is passed securely via the PGPASSWORD environment variable set in the step's env block
+        psql \
           -h localhost \
           -d ${{ services.postgres.env.POSTGRES_DB }} \
           -U ${{ services.postgres.env.POSTGRES_USER }} \
           -c "CREATE SCHEMA IF NOT EXISTS ecom;"
+      env: # Define environment variables for this specific step
+        PGPASSWORD: ${{ services.postgres.env.POSTGRES_PASSWORD }} # Access the password from the service env
 
     - name: Run Maven Tests
       # The Surefire/Failsafe plugins handle running tests based on naming conventions or configurations.
