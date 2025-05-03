@@ -28,10 +28,12 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven # Step 1: Build the project
-      run: mvn -B package --file pom.xml
+      # Updated command to specify the pom.xml location within the ecom folder
+      run: mvn -B package --file ecom/pom.xml
 
     - name: Run Maven Tests # Step 2: Run the tests after building
-      run: mvn -B test --file pom.xml # Command to run tests
+      # Updated command to specify the pom.xml location within the ecom folder
+      run: mvn -B test --file ecom/pom.xml # Command to run tests
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
