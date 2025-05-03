@@ -31,13 +31,7 @@ jobs:
         env:
           POSTGRES_DB: ecomdb
           POSTGRES_USER: ecom
-          POSTGRES_PASSWORD: ecom
-        # Add a health check to wait for the database to be ready
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          POSTGRES_PASSWORD: ecom # The password is set here
 
     steps:
     - uses: actions/checkout@v4
@@ -62,6 +56,17 @@ jobs:
             exit 1
           fi
         done
+
+    # Add a step to create the 'ecom' schema
+    - name: Create ecom schema
+      run: |
+        # Use psql to connect to the database and create the schema if it doesn't exist
+        # The password is passed securely via the PGPASSWORD environment variable
+        PGPASSWORD=${{ services.postgres.env.POSTGRES_PASSWORD }} psql \
+          -h localhost \
+          -d ${{ services.postgres.env.POSTGRES_DB }} \
+          -U ${{ services.postgres.env.POSTGRES_USER }} \
+          -c "CREATE SCHEMA IF NOT EXISTS ecom;"
 
     - name: Build with Maven
       # Updated command to specify the pom.xml location within the ecom folder
@@ -90,7 +95,7 @@ jobs:
         env:
           POSTGRES_DB: ecomdb
           POSTGRES_USER: ecom
-          POSTGRES_PASSWORD: ecom
+          POSTGRES_PASSWORD: ecom # The password is set here
         # Add a health check to wait for the database to be ready
         options: >-
           --health-cmd pg_isready
@@ -129,6 +134,16 @@ jobs:
           fi
         done
 
+    # Add a step to create the 'ecom' schema
+    - name: Create ecom schema
+      run: |
+        # Use psql to connect to the database and create the schema if it doesn't exist
+        # The password is passed securely via the PGPASSWORD environment variable
+        PGPASSWORD=${{ services.postgres.env.POSTGRES_PASSWORD }} psql \
+          -h localhost \
+          -d ${{ services.postgres.env.POSTGRES_DB }} \
+          -U ${{ services.postgres.env.POSTGRES_USER }} \
+          -c "CREATE SCHEMA IF NOT EXISTS ecom;"
 
     - name: Run Maven Tests
       # The Surefire/Failsafe plugins handle running tests based on naming conventions or configurations.
