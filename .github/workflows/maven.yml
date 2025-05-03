@@ -41,6 +41,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: build # This job depends on the 'build' job completing successfully
 
+    # Define services required for this job
+    services:
+      # PostgreSQL container service
+      postgres:
+        # Use the latest PostgreSQL image
+        image: postgres:latest
+        # Map the container port 5432 to the host port 5432
+        ports:
+          - 5432:5432
+        # Set environment variables for the database
+        env:
+          POSTGRES_DB: ecomdb
+          POSTGRES_USER: ecom
+          POSTGRES_PASSWORD: ecom
+        # Add a health check to wait for the database to be ready
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
     - name: Download build artifact
@@ -56,6 +77,22 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven # Cache Maven dependencies
+
+    # Add a step to wait for the PostgreSQL service to be healthy
+    - name: Wait for PostgreSQL
+      run: |
+        # Wait for the postgres service to be ready using the health check defined above
+        # This ensures the database is available before running tests
+        for i in $(seq 1 10); do
+          nc -z localhost 5432 && echo "PostgreSQL is ready" && break
+          echo "Waiting for PostgreSQL..."
+          sleep 5
+          if [ $i -eq 10 ]; then
+            echo "PostgreSQL did not become ready in time"
+            exit 1
+          fi
+        done
+
 
     - name: Run Maven Tests
       # The Surefire/Failsafe plugins handle running tests based on naming conventions or configurations.
