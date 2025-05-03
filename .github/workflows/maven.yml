@@ -32,6 +32,12 @@ jobs:
           POSTGRES_DB: ecomdb
           POSTGRES_USER: ecom
           POSTGRES_PASSWORD: ecom # The password is set here
+        # Add a health check to wait for the database to be ready
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v4
