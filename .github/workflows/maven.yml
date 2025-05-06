@@ -69,4 +69,4 @@ jobs:
     - name: Run Tests with Maven
       # Execute the test phase using the artifacts from the build job
       # Activate the Maven profile named 'test'
-      run: mvn -B test -P test --file ecom/pom.xml
+      run: mvn -B test -Dspring.profiles.active=test --file ecom/pom.xml
