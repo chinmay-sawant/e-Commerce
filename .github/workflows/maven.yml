@@ -67,5 +67,6 @@ jobs:
         cache: maven
 
     - name: Run Tests with Maven
-      # Point to the pom.xml inside the ecom folder
-      run: mvn -B test --file ecom/pom.xml
+      # Execute the test phase using the artifacts from the build job
+      # Activate the Maven profile named 'test'
+      run: mvn -B test --profile test --file ecom/pom.xml
