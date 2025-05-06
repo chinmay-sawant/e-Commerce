@@ -1,0 +1,78 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    name: Build Project
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      # Point to the pom.xml inside the ecom folder
+      run: mvn -B package -DskipTests --file ecom/pom.xml
+
+    # Upload the build artifacts (the target directory, which will be inside ecom)
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ecom-target-directory # Give the artifact a unique name
+        # Point to the target directory inside the ecom folder
+        path: ecom/target/
+
+    # Optional: Uploads the full dependency graph to GitHub (this runs after the build)
+    # Note: This action might also need to know the location of the pom.xml
+    # Check its documentation if it fails, but often it can infer it.
+    - name: Update dependency graph
+      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+
+  test:
+    name: Run Tests
+    # This job depends on the 'build' job, so it will run after 'build' completes successfully
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout is needed to get the project structure and workflow files
+    - uses: actions/checkout@v4
+
+    # Download the build artifact (the target directory) from the 'build' job
+    # Download path should match the upload path structure
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ecom-target-directory # Name of the artifact to download
+        # Path to download the artifact to - crucial to match the original location
+        path: ecom/target/
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Run Tests with Maven
+      # Point to the pom.xml inside the ecom folder
+      run: mvn -B test --file ecom/pom.xml
