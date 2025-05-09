@@ -1,7 +1,10 @@
 package com.learn.ecom.utils;
 
-public interface utils {
-    static <T, U> U convertModel(T source, Class<U> targetClass) {
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class utils {
+    public static <T, U> U convertModel(T source, Class<U> targetClass) {
         try {
             U target = targetClass.getDeclaredConstructor().newInstance();
             java.lang.reflect.Field[] sourceFields = source.getClass().getDeclaredFields();
@@ -23,7 +26,7 @@ public interface utils {
         }
     }
 
-    static <T, U> java.util.List<U> convertModelList(java.util.List<T> sourceList, Class<U> targetClass) {
+    public static <T, U> java.util.List<U> convertModelList(java.util.List<T> sourceList, Class<U> targetClass) {
         java.util.List<U> targetList = new java.util.ArrayList<>();
         for (T source : sourceList) {
             targetList.add(convertModel(source, targetClass));
@@ -31,7 +34,7 @@ public interface utils {
         return targetList;
     }
 
-    static <T> void updateModel(T source, T target) {
+    public static <T> void updateModel(T source, T target) {
         try {
             java.lang.reflect.Field[] sourceFields = source.getClass().getDeclaredFields();
             java.lang.reflect.Field[] targetFields = target.getClass().getDeclaredFields();
@@ -54,7 +57,7 @@ public interface utils {
         }
     }
 
-    static String getAuth0TokenFromPropertiesTest() {
+    public static String getAuth0TokenFromPropertiesTest() {
         try {
             java.util.Properties properties = new java.util.Properties();
             try (java.io.InputStream input = utils.class.getClassLoader().getResourceAsStream("application-test.properties")) {
@@ -65,23 +68,23 @@ public interface utils {
             }
             String clientId = System.getenv("OKTA_OAUTH2_CLIENT_ID");
             if (clientId == null || clientId.isEmpty()) {
-                clientId = properties.getProperty("okta.oauth2.client-id");
+                log.error("Environment variable OKTA_OAUTH2_CLIENT_ID is null or empty");
             }
 
             String clientSecret = System.getenv("OKTA_OAUTH2_CLIENT_SECRET");
             if (clientSecret == null || clientSecret.isEmpty()) {
-                clientSecret = properties.getProperty("okta.oauth2.client-secret");
+                log.error("Environment variable OKTA_OAUTH2_CLIENT_SECRET is null or empty");
             }
 
             String audience = System.getenv("OKTA_OAUTH2_AUDIENCE");
             if (audience == null || audience.isEmpty()) {
-                audience = properties.getProperty("okta.oauth2.audience");
+                log.error("Environment variable OKTA_OAUTH2_AUDIENCE is null or empty");
             }
 
             String auth0Domain = System.getenv("OKTA_OAUTH2_ISSUER");
             if (auth0Domain == null || auth0Domain.isEmpty()) {
-                auth0Domain = properties.getProperty("okta.oauth2.issuer");
-            } 
+                log.error("Environment variable OKTA_OAUTH2_ISSUER is null or empty");
+            }
 
             if (auth0Domain.endsWith("/")) {
                 auth0Domain = auth0Domain.substring(0, auth0Domain.length() - 1);
