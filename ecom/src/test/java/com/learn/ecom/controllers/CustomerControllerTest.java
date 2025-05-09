@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.learn.ecom.BaseTest;
 import com.learn.ecom.models.Customer;
 import com.learn.ecom.models.dto.CustomerReqDTO;
 import com.learn.ecom.models.dto.CustomerResDTO;
@@ -25,7 +26,7 @@ import com.learn.ecom.services.serviceImpl.CustomerServiceImpl;
 import com.learn.ecom.utils.utils;
 
 @WebMvcTest(CustomerController.class)
-public class CustomerControllerTest {
+public class CustomerControllerTest extends BaseTest {
     
     @MockitoBean
     private CustomerServiceImpl customerService;
@@ -43,7 +44,8 @@ public class CustomerControllerTest {
         Mockito.when(customerService.getAllCustomers()).thenReturn(customers);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/customers"))
+        mockMvc.perform(get("/api/v1/customers")
+            .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.length()").value(customers.size()))
@@ -74,7 +76,8 @@ public class CustomerControllerTest {
         }
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/customers"))
+        mockMvc.perform(get("/api/v1/customers")
+            .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.length()").value(customers.size()))
@@ -96,7 +99,8 @@ public class CustomerControllerTest {
             mockedUtils.when(() -> utils.convertModel(customer, CustomerResDTO.class)).thenReturn(customerResDTO);
         }
         // Act & Assert
-        mockMvc.perform(get("/api/v1/customers/1"))
+        mockMvc.perform(get("/api/v1/customers/1")
+        .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.id").value(customerResDTO.getId()))
@@ -124,6 +128,7 @@ public class CustomerControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/v1/customers")
+        .header("Authorization", "Bearer " + token)
                 .contentType("application/json")
                 .content("{\"username\":\"johndoe\",\"email\":\"john.doe@example.com\",\"password\":\"password123\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"address\":\"123 Main St\",\"phone\":\"1234567890\"}"))
             .andExpect(status().isCreated())
@@ -155,6 +160,7 @@ public class CustomerControllerTest {
 
         // Act & Assert
         mockMvc.perform(put("/api/v1/customers/1")
+        .header("Authorization", "Bearer " + token)
                 .contentType("application/json")
                 .content("{\"username\":\"johndoe_updated\",\"email\":\"john.updated@example.com\",\"password\":\"newpassword123\",\"firstName\":\"Johnny\",\"lastName\":\"Doey\",\"address\":\"456 Oak St\",\"phone\":\"9876543210\"}"))
             .andExpect(status().isCreated())
@@ -188,6 +194,7 @@ public class CustomerControllerTest {
 
         // Act & Assert
         mockMvc.perform(patch("/api/v1/customers/1")
+        .header("Authorization", "Bearer " + token)
                 .contentType("application/json")
                 .content("{\"firstName\":\"John\"}"))
             .andExpect(status().isCreated())
@@ -203,7 +210,8 @@ public class CustomerControllerTest {
     @Test
     public void testDeleteMethodName() throws Exception {
         // Act & Assert
-        mockMvc.perform(delete("/api/v1/customers/1"))
+        mockMvc.perform(delete("/api/v1/customers/1")
+        .header("Authorization", "Bearer " + token))
             .andExpect(status().isNoContent())
             .andExpect(content().string("Customer with ID 1 deleted successfully."));
 
