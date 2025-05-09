@@ -63,11 +63,25 @@ public interface utils {
                 }
                 properties.load(input);
             }
+            String clientId = System.getenv("OKTA_OAUTH2_CLIENT_ID");
+            if (clientId == null || clientId.isEmpty()) {
+                clientId = properties.getProperty("okta.oauth2.client-id");
+            }
 
-            String clientId = properties.getProperty("okta.oauth2.client-id");
-            String clientSecret = properties.getProperty("okta.oauth2.client-secret");
-            String audience = properties.getProperty("okta.oauth2.audience");
-            String auth0Domain = properties.getProperty("okta.oauth2.issuer");
+            String clientSecret = System.getenv("OKTA_OAUTH2_CLIENT_SECRET");
+            if (clientSecret == null || clientSecret.isEmpty()) {
+                clientSecret = properties.getProperty("okta.oauth2.client-secret");
+            }
+
+            String audience = System.getenv("OKTA_OAUTH2_AUDIENCE");
+            if (audience == null || audience.isEmpty()) {
+                audience = properties.getProperty("okta.oauth2.audience");
+            }
+
+            String auth0Domain = System.getenv("OKTA_OAUTH2_ISSUER");
+            if (auth0Domain == null || auth0Domain.isEmpty()) {
+                auth0Domain = properties.getProperty("okta.oauth2.issuer");
+            }
 
             if (auth0Domain.endsWith("/")) {
                 auth0Domain = auth0Domain.substring(0, auth0Domain.length() - 1);
