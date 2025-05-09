@@ -81,7 +81,7 @@ public interface utils {
             String auth0Domain = System.getenv("OKTA_OAUTH2_ISSUER");
             if (auth0Domain == null || auth0Domain.isEmpty()) {
                 auth0Domain = properties.getProperty("okta.oauth2.issuer");
-            }
+            } 
 
             if (auth0Domain.endsWith("/")) {
                 auth0Domain = auth0Domain.substring(0, auth0Domain.length() - 1);
