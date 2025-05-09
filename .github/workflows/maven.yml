@@ -72,8 +72,10 @@ jobs:
       # Add the env block to pass GitHub Secrets as environment variables
       run: mvn -B test -Dspring.profiles.active=test --file ecom/pom.xml
       env: # <--- Add this env block
-        OKTA_OAUTH2_ISSUER: ${{ secrets.OKTA_OAUTH2_ISSUER }}
-        OKTA_OAUTH2_AUDIENCE: ${{ secrets.OKTA_OAUTH2_AUDIENCE }}
+        # Map environment variables to standard Spring Security property names
+        SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${{ secrets.OKTA_OAUTH2_ISSUER }}
+        SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_AUDIENCE: ${{ secrets.OKTA_OAUTH2_AUDIENCE }}
+        # If you need client ID/Secret in your app, map them to different property names
         OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
         OKTA_OAUTH2_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH2_CLIENT_SECRET }}
         # Add any other secrets your tests need here if necessary
