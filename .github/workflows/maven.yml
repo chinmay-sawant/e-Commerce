@@ -69,4 +69,11 @@ jobs:
     - name: Run Tests with Maven
       # Execute the test phase using the artifacts from the build job
       # Activate the Maven profile named 'test'
+      # Add the env block to pass GitHub Secrets as environment variables
       run: mvn -B test -Dspring.profiles.active=test --file ecom/pom.xml
+      env: # <--- Add this env block
+        OKTA_OAUTH2_ISSUER: ${{ secrets.OKTA_OAUTH2_ISSUER }}
+        OKTA_OAUTH2_AUDIENCE: ${{ secrets.OKTA_OAUTH2_AUDIENCE }}
+        OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
+        OKTA_OAUTH2_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH2_CLIENT_SECRET }}
+        # Add any other secrets your tests need here if necessary
