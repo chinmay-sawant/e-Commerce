@@ -37,6 +37,6 @@ The project is planned to be extended with the following integrations:
 
 ```bash
 # Example commands (replace with actual instructions)
-git clone [https://github.com/chinmay-sawant/e-Commerce.git](https://github.com/chinmay-sawant/e-Commerce.git)
+git clone https://github.com/chinmay-sawant/e-Commerce.git
 cd e-Commerce
 # ... build and run instructions ...
