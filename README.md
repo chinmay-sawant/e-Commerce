@@ -23,6 +23,7 @@ This project focuses on implementing and understanding:
 * **Data Access:** Spring Data JPA, Hibernate
 * **Database:** PostgreSQL
 * **CI/CD:** GitHub Actions
+* **Testing:** JUnit 5, Mockito
 
 ## Future Enhancements
 
