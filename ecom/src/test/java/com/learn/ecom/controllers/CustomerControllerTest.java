@@ -7,6 +7,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -18,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.learn.ecom.BaseTest;
 import com.learn.ecom.models.Customer;
 import com.learn.ecom.models.dto.CustomerReqDTO;
 import com.learn.ecom.models.dto.CustomerResDTO;
@@ -26,7 +27,7 @@ import com.learn.ecom.services.serviceImpl.CustomerServiceImpl;
 import com.learn.ecom.utils.utils;
 
 @WebMvcTest(CustomerController.class)
-public class CustomerControllerTest extends BaseTest {
+public class CustomerControllerTest {
     
     @MockitoBean
     private CustomerServiceImpl customerService;
@@ -35,6 +36,7 @@ public class CustomerControllerTest extends BaseTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
     public void testGetAllCustomers() throws Exception {
         // Arrange
         List<Customer> customers = List.of(
@@ -44,8 +46,7 @@ public class CustomerControllerTest extends BaseTest {
         Mockito.when(customerService.getAllCustomers()).thenReturn(customers);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/customers")
-            .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/customers"))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.length()").value(customers.size()))
@@ -61,6 +62,8 @@ public class CustomerControllerTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
+
     public void testGetCustomer() throws Exception {
         // Arrange
         List<CustomerResDTO> customers = List.of(
@@ -77,7 +80,7 @@ public class CustomerControllerTest extends BaseTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/customers")
-            .header("Authorization", "Bearer " + token))
+            )
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.length()").value(customers.size()))
@@ -90,6 +93,8 @@ public class CustomerControllerTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
+
     public void testGetCustomerById() throws Exception {
         // Arrange
         Customer customer = new Customer(1L, "johndoe", "john.doe@example.com", "password123", "John", "Doe", "123 Main St", "1234567890");
@@ -100,7 +105,7 @@ public class CustomerControllerTest extends BaseTest {
         }
         // Act & Assert
         mockMvc.perform(get("/api/v1/customers/1")
-        .header("Authorization", "Bearer " + token))
+        )
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.id").value(customerResDTO.getId()))
@@ -112,6 +117,7 @@ public class CustomerControllerTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
     public void testPostMethodName() throws Exception {
         // Arrange
         CustomerReqDTO requestDTO = new CustomerReqDTO("johndoe", "john.doe@example.com", "password123", "John", "Doe", "123 Main St", "1234567890");
@@ -128,7 +134,8 @@ public class CustomerControllerTest extends BaseTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/v1/customers")
-        .header("Authorization", "Bearer " + token)
+                    .with(csrf()) // Add CSRF token
+
                 .contentType("application/json")
                 .content("{\"username\":\"johndoe\",\"email\":\"john.doe@example.com\",\"password\":\"password123\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"address\":\"123 Main St\",\"phone\":\"1234567890\"}"))
             .andExpect(status().isCreated())
@@ -144,6 +151,7 @@ public class CustomerControllerTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
     public void testPutMethodNameWithFullDetails() throws Exception {
         // Arrange
         CustomerReqDTO requestDTO = new CustomerReqDTO("johndoe_updated", "john.updated@example.com", "newpassword123", "Johnny", "Doey", "456 Oak St", "9876543210");
@@ -160,7 +168,7 @@ public class CustomerControllerTest extends BaseTest {
 
         // Act & Assert
         mockMvc.perform(put("/api/v1/customers/1")
-        .header("Authorization", "Bearer " + token)
+         .with(csrf())
                 .contentType("application/json")
                 .content("{\"username\":\"johndoe_updated\",\"email\":\"john.updated@example.com\",\"password\":\"newpassword123\",\"firstName\":\"Johnny\",\"lastName\":\"Doey\",\"address\":\"456 Oak St\",\"phone\":\"9876543210\"}"))
             .andExpect(status().isCreated())
@@ -178,6 +186,7 @@ public class CustomerControllerTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
     public void testPatchMethodName() throws Exception {
         // Arrange
         CustomerReqDTO entity = new CustomerReqDTO("johndoe", "john.doe@example.com", "password123", "John", "Doe", "123 Main St", "1234567890");
@@ -194,7 +203,7 @@ public class CustomerControllerTest extends BaseTest {
 
         // Act & Assert
         mockMvc.perform(patch("/api/v1/customers/1")
-        .header("Authorization", "Bearer " + token)
+        .with(csrf())
                 .contentType("application/json")
                 .content("{\"firstName\":\"John\"}"))
             .andExpect(status().isCreated())
@@ -208,10 +217,11 @@ public class CustomerControllerTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER", "ADMIN"}) // <--- Add this annotation
     public void testDeleteMethodName() throws Exception {
         // Act & Assert
-        mockMvc.perform(delete("/api/v1/customers/1")
-        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(delete("/api/v1/customers/1").with(csrf())
+        )
             .andExpect(status().isNoContent())
             .andExpect(content().string("Customer with ID 1 deleted successfully."));
 

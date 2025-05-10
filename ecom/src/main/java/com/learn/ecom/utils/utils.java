@@ -86,7 +86,7 @@ public class utils {
                 log.error("Environment variable OKTA_OAUTH2_ISSUER is null or empty");
             }
 
-            if (auth0Domain.endsWith("/")) {
+            if (auth0Domain != null && auth0Domain.endsWith("/")) {
                 auth0Domain = auth0Domain.substring(0, auth0Domain.length() - 1);
             }
 
