@@ -3,6 +3,7 @@ package com.learn.ecom.config;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
     import static org.springframework.security.config.Customizer.withDefaults;
     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
     import org.springframework.security.web.SecurityFilterChain;
@@ -24,6 +25,11 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/api/public").permitAll()
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/customers").hasAuthority("SCOPE_read:customers")
+                .requestMatchers(HttpMethod.POST, "/api/v1/customers").hasAuthority("SCOPE_write:customers")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/customers").hasAuthority("SCOPE_write:customers")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/customers").hasAuthority("SCOPE_write:customers")
+                .requestMatchers(HttpMethod.PATCH, "/api/v1/customers").hasAuthority("SCOPE_write:customers")
                 .anyRequest().authenticated()
             )
             .csrf(csrf -> csrf.disable()) 
